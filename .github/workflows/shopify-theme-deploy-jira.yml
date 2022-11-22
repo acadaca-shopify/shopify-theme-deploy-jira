@@ -1,4 +1,11 @@
 name: 'Jira Upload Deployment Info'
+on:
+  push:
+    branches:
+      - master
+      - staging
+      - release/*
+      - feature/*
 jobs:
   deploy_theme:
     runs-on: ubuntu-latest
