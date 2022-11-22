@@ -11,13 +11,6 @@ on:
       client-secret:
         required: true
         type: string
-    secrets:
-      JIRA_CLIENT_ID:
-        required: true
-      JIRA_CLIENT_SECRET:
-        required: true
-      JIRA_CLOUD_BASE_URL:
-        required: true
 jobs:
   deploy_theme:
     runs-on: ubuntu-latest
