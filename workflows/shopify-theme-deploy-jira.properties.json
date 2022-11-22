@@ -1,0 +1,4 @@
+{
+  "name": "Acadaca Shopify Theme Deploy in JIRA",
+  "description": "GitHub Action to report theme deployments to JIRA cloud"
+}

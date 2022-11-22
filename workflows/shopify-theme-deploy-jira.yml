@@ -1,0 +1,73 @@
+name: 'Jira Upload Deployment Info'
+on:
+  push:
+    branches:
+      - master
+      - staging
+      - release/*
+      - feature/*
+jobs:
+  deploy_theme:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push'
+    steps:
+      - name: Set Release Environment
+        if: github.ref_name == 'staging' || startsWith(github.ref_name, 'release/')
+        run: echo "ENVIRONMENT=staging" >> $GITHUB_ENV
+      - name: Set Production Environment
+        if: github.ref_name == 'master'
+        run: echo "ENVIRONMENT=production" >> $GITHUB_ENV
+      - name: Set Development Environment
+        if: github.ref_name != 'master' && github.ref_name != 'staging' && !startsWith(github.ref_name, 'release/')
+        run: echo "ENVIRONMENT=development" >> $GITHUB_ENV
+      - name: Deploy Theme
+        run: |
+          echo "Deploying Theme..."
+          echo "github.event_name: ${{github.event_name}}"
+          echo "github.ref: ${{github.ref}}"
+          echo "DEPLOY_STATE=successful" >> $GITHUB_ENV
+      - name: Failed Deployment
+        if: failure()
+        run: echo "DEPLOY_STATE=failed" >> $GITHUB_ENV
+      - name: Parse Jira Keys from All Commits
+        id: jira_keys
+        if: always()
+        uses: HighwayThree/jira-extract-issue-keys@master
+        with:
+          is-pull-request: ${{ github.event_name == 'pull_request' }}
+          parse-all-commits: ${{ github.event_name == 'push' }}
+        env:
+          GITHUB_RUN_ID: ${{ secrets.GITHUB_RUN_ID }}
+          GITHUB_RUN_NUMBER: ${{ secrets.GITHUB_RUN_NUMBER }}
+      - name: Confirm Deploy State and Jira Key Values
+        if: always()
+        run: |
+          echo "DEPLOY_STATE: ${{env.DEPLOY_STATE}}"
+          echo "Jira Keys: ${{steps.jira_keys.outputs.jira-keys}}"
+      - name: Push Deployment Info to Jira
+        if: steps.jira_keys.outputs.jira-keys != ''
+        id: push_deployment_info_to_jira
+        uses: HighwayThree/jira-upload-deployment-info@master
+        with:
+          cloud-instance-base-url: '{{ secrets.JIRA_CLOUD_BASE_URL }}'
+          client-id: '{{ secrets.JIRA_CLIENT_ID }}'
+          client-secret: '{{ secrets.JIRA_CLIENT_SECRET }}'
+          deployment-sequence-number: '${{ github.run_id }}'
+          update-sequence-number: '${{ github.run_id }}'
+          issue-keys: "${{ steps.jira_keys.outputs.jira-keys }}"
+          display-name: "${{ github.event.head_commit.message }}"
+          url: "${{github.event.repository.url}}/actions/runs/${{github.run_id}}"
+          description: "Theme Deployment"
+          last-updated: '${{github.event.head_commit.timestamp}}'
+          label: "${{ github.event.head_commit.message }}"
+          state: '${{env.DEPLOY_STATE}}'
+          pipeline-id: '${{ github.repository }} ${{ github.workflow }}'
+          pipeline-display-name: 'Workflow: ${{ github.workflow }} (#${{ github.run_number }})'
+          pipeline-url: '${{github.event.repository.url}}/actions/runs/${{github.run_id}}'
+          environment-id: '${{ github.head_ref || github.ref_name }}'
+          environment-display-name: '${{ github.head_ref || github.ref_name }}'
+          environment-type: '${{ env.ENVIRONMENT }}'
+      - name: Confirm Jira Deploy Output
+        if: success()
+        run: |
+          echo "Jira Upload Deploy Info Response: ${{steps.push_deployment_info_to_jira.outputs.response}}"
