@@ -44,9 +44,9 @@ jobs:
         id: push_deployment_info_to_jira
         uses: HighwayThree/jira-upload-deployment-info@master
         with:
-          cloud-instance-base-url: 'https://acadaca.atlassian.net'
-          client-id: 'xpd0r0Qils4olQ27qnf3IUXkfpLbplkx'
-          client-secret: 'ATOAeY43Kmc6MmlVrG0gNSmCF43W-dClGnhTA-IYn1Pz5dm8dm9l4aPeccnFIf3Y3VFm8624ACD9'
+          cloud-instance-base-url: '{{ secrets.JIRA_CLOUD_BASE_URL }}'
+          client-id: '{{ secrets.JIRA_CLIENT_ID }}'
+          client-secret: '{{ secrets.JIRA_CLIENT_SECRET }}'
           deployment-sequence-number: '${{ github.run_id }}'
           update-sequence-number: '${{ github.run_id }}'
           issue-keys: "${{ steps.jira_keys.outputs.jira-keys }}"
