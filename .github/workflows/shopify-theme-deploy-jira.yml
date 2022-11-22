@@ -16,6 +16,8 @@ jobs:
     runs-on: ubuntu-latest
     if: github.event_name == 'push'
     steps:
+      - name: See inputs
+        run: echo ${{ input.client-id}}
       - name: Set Release Environment
         if: github.ref_name == 'staging' || startsWith(github.ref_name, 'release/')
         run: echo "ENVIRONMENT=staging" >> $GITHUB_ENV
