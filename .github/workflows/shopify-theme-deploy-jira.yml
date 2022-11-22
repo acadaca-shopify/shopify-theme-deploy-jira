@@ -1,6 +1,16 @@
 name: 'Jira Upload Deployment Info'
 on:
   workflow_call:
+    inputs:
+      cloud-instance-base-url:
+        required: true
+        type: string
+      client-id:
+        required: true
+        type: string
+      client-secret:
+        required: true
+        type: string
     secrets:
       JIRA_CLIENT_ID:
         required: true
