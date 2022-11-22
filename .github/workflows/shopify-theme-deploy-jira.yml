@@ -1,6 +1,10 @@
 name: 'Jira Upload Deployment Info'
 on:
   workflow_call:
+    secrets:
+      JIRA_CLIENT_ID: ${{ secrets.JIRA_CLIENT_ID }}
+      JIRA_CLIENT_SECRET: ${{ secrets.JIRA_CLIENT_SECRET }}
+      JIRA_CLOUD_BASE_URL: ${{ secrets.JIRA_CLOUD_BASE_URL }}
 jobs:
   deploy_theme:
     runs-on: ubuntu-latest
