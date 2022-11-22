@@ -54,9 +54,9 @@ jobs:
         id: push_deployment_info_to_jira
         uses: HighwayThree/jira-upload-deployment-info@master
         with:
-          cloud-instance-base-url: '{{ inputs.cloud-instance-base-url }}'
-          client-id: '{{ inputs.client-id }}'
-          client-secret: '{{ inputs.client-secret }}'
+          cloud-instance-base-url: ${{ inputs.cloud-instance-base-url }}
+          client-id: ${{ inputs.client-id }}
+          client-secret: ${{ inputs.client-secret }}
           deployment-sequence-number: '${{ github.run_id }}'
           update-sequence-number: '${{ github.run_id }}'
           issue-keys: "${{ steps.jira_keys.outputs.jira-keys }}"
