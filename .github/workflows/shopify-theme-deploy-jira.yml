@@ -1,16 +1,6 @@
 name: 'Jira Upload Deployment Info'
 on:
   workflow_call:
-    inputs:
-      cloud-instance-base-url:
-        required: true
-        type: string
-      client-id:
-        required: true
-        type: string
-      client-secret:
-        required: true
-        type: string
 jobs:
   deploy_theme:
     runs-on: ubuntu-latest
@@ -56,9 +46,9 @@ jobs:
         id: push_deployment_info_to_jira
         uses: HighwayThree/jira-upload-deployment-info@master
         with:
-          cloud-instance-base-url: ${{ inputs.cloud-instance-base-url }}
-          client-id: ${{ inputs.client-id }}
-          client-secret: ${{ inputs.client-secret }}
+          cloud-instance-base-url: ${{ secrets.cloud-instance-base-url }}
+          client-id: ${{ secrets.client-id }}
+          client-secret: ${{ secrets.client-secret }}
           deployment-sequence-number: '${{ github.run_id }}'
           update-sequence-number: '${{ github.run_id }}'
           issue-keys: "${{ steps.jira_keys.outputs.jira-keys }}"
